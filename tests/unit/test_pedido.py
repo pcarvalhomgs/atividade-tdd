@@ -50,3 +50,8 @@ def test_bug_2_frete_gratis_inclui_cinquenta_reais():
 def test_bug_3_item_mais_barato_usa_menor_preco(pedido_pequeno):
     # O pão custa 4,50 por unidade, mesmo tendo duas unidades no pedido.
     assert pedido_pequeno.item_mais_barato() == Item("Pão de queijo", 4.5, 2)
+
+def test_bug_4_desconto_reduz_o_subtotal():
+    # Quantidade 1 isola o desconto do bug no cálculo do subtotal.
+    pedido = Pedido("Carla", [Item("Combo", 100.0)])
+    assert pedido.total_com_desconto(10) == pytest.approx(90.0)
