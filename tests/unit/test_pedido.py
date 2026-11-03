@@ -55,3 +55,18 @@ def test_bug_4_desconto_reduz_o_subtotal():
     # Quantidade 1 isola o desconto do bug no cálculo do subtotal.
     pedido = Pedido("Carla", [Item("Combo", 100.0)])
     assert pedido.total_com_desconto(10) == pytest.approx(90.0)
+
+@pytest.mark.parametrize(
+    "subtotais, esperado",
+    [
+        pytest.param([50.0, 73.0], 2, id="todos-com-frete-gratis"),
+        pytest.param([15.0, 49.99], 0, id="nenhum-com-frete-gratis"),
+        pytest.param([15.0, 50.0, 73.0], 2, id="lista-mista"),
+        pytest.param([], 0, id="lista-vazia"),
+    ],
+)
+def test_contar_frete_gratis(subtotais, esperado):
+    from pedido.pedido import contar_frete_gratis
+
+    pedidos = [Pedido("Cliente", [Item("Combo", valor)]) for valor in subtotais]
+    assert contar_frete_gratis(pedidos) == esperado
