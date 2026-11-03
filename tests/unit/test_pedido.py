@@ -38,3 +38,7 @@ def test_exemplo_quantidade_total(pedido_pequeno):
 # Requisito 3 — sugerir_frete_gratis(sms_service) -> None
 # Use MagicMock para simular o serviço de SMS
 # Escreva os testes ANTES de implementar o método
+
+def test_bug_1_subtotal_considera_quantidades(pedido_pequeno):
+    # 6 * 1 + 4,50 * 2 = 15; somar apenas os preços daria 10,50.
+    assert pedido_pequeno.subtotal() == pytest.approx(15.0)
