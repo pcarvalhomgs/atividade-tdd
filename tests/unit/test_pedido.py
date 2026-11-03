@@ -46,3 +46,7 @@ def test_bug_1_subtotal_considera_quantidades(pedido_pequeno):
 def test_bug_2_frete_gratis_inclui_cinquenta_reais():
     pedido = Pedido("Carla", [Item("Combo", 50.0)])
     assert pedido.tem_frete_gratis() is True
+
+def test_bug_3_item_mais_barato_usa_menor_preco(pedido_pequeno):
+    # O pão custa 4,50 por unidade, mesmo tendo duas unidades no pedido.
+    assert pedido_pequeno.item_mais_barato() == Item("Pão de queijo", 4.5, 2)
