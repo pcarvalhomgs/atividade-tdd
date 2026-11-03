@@ -92,3 +92,26 @@ def test_situacao_respeita_estoque_e_frete(preco, quantidade, indisponiveis, esp
     # 1/4 = 25%; 26/100 = 26%, pouco acima do limite.
     pedido = Pedido("Carla", [Item("Lanche", preco, quantidade)])
     assert pedido.situacao(indisponiveis) == esperado
+
+def test_sugerir_frete_gratis_envia_cliente_e_valor_faltante(pedido_pequeno):
+    sms_service = MagicMock()
+    pedido_pequeno.sugerir_frete_gratis(sms_service)
+    # O mock registra a chamada sem enviar um SMS real.
+    sms_service.enviar.assert_called_once_with("Bruno", 35.0)
+
+
+@pytest.mark.parametrize("subtotal", [73.0, 50.0], ids=["acima-do-limite", "no-limite"])
+def test_sugerir_frete_gratis_nao_aciona_servico_quando_tem_frete(subtotal):
+    sms_service = MagicMock()
+    pedido = Pedido("Ana", [Item("Combo", subtotal)])
+    pedido.sugerir_frete_gratis(sms_service)
+    sms_service.enviar.assert_not_called()
+    assert sms_service.mock_calls == []
+
+
+def test_sugerir_frete_gratis_arredonda_valor_para_centavos():
+    sms_service = MagicMock()
+    pedido = Pedido("Carla", [Item("Suco", 8.1)])
+    pedido.sugerir_frete_gratis(sms_service)
+    # Evita passar 41.900000000000006 ao serviço.
+    sms_service.enviar.assert_called_once_with("Carla", 41.9)
