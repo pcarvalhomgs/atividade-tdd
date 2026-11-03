@@ -70,3 +70,25 @@ def test_contar_frete_gratis(subtotais, esperado):
 
     pedidos = [Pedido("Cliente", [Item("Combo", valor)]) for valor in subtotais]
     assert contar_frete_gratis(pedidos) == esperado
+
+@pytest.mark.parametrize(
+    "preco, quantidade, indisponiveis, esperado",
+    [
+        pytest.param(20.0, 4, 2, "Cancelado por falta de estoque",
+                     id="estoque-tem-prioridade-sobre-frete"),
+        pytest.param(12.5, 4, 0, "Confirmado com frete grátis",
+                     id="tudo-disponivel-com-frete"),
+        pytest.param(10.0, 4, 0, "Confirmado",
+                     id="tudo-disponivel-sem-frete"),
+        pytest.param(20.0, 4, 1, "Confirmado com frete grátis",
+                     id="exatos-25-por-cento-com-frete"),
+        pytest.param(10.0, 4, 1, "Confirmado",
+                     id="exatos-25-por-cento-sem-frete"),
+        pytest.param(1.0, 100, 26, "Cancelado por falta de estoque",
+                     id="26-por-cento-cancela"),
+    ],
+)
+def test_situacao_respeita_estoque_e_frete(preco, quantidade, indisponiveis, esperado):
+    # 1/4 = 25%; 26/100 = 26%, pouco acima do limite.
+    pedido = Pedido("Carla", [Item("Lanche", preco, quantidade)])
+    assert pedido.situacao(indisponiveis) == esperado
