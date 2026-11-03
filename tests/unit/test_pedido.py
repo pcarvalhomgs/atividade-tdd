@@ -42,3 +42,7 @@ def test_exemplo_quantidade_total(pedido_pequeno):
 def test_bug_1_subtotal_considera_quantidades(pedido_pequeno):
     # 6 * 1 + 4,50 * 2 = 15; somar apenas os preços daria 10,50.
     assert pedido_pequeno.subtotal() == pytest.approx(15.0)
+
+def test_bug_2_frete_gratis_inclui_cinquenta_reais():
+    pedido = Pedido("Carla", [Item("Combo", 50.0)])
+    assert pedido.tem_frete_gratis() is True
